@@ -29,7 +29,7 @@ This is the writeup.
 
 Camera calibration is contained in its own Jupyter Notebook called "Step 1 - Camera Calibration.ipynb".
 
-For camera calibration, I directly adapted the `camera_calibration.ipynb` notebook in the Udacity `CarND-Camera-Calibration` repo. I modified it for the 6x9 chessboard images in Project 4.  This uses the apparent distortion in chessboard pattern images captured from different vantage points to reverse engineer the camera optics that was used to capture the images.  This is done with the OpenCV `findChessboardCorners` function to detect chessboard corners, and `calibrateCamera` for camera calibration.
+For camera calibration, I directly adapted the `camera_calibration.ipynb` notebook in the Udacity `CarND-Camera-Calibration` repo. I modified it for the 6x9 chessboard images in Project 4.  This uses the apparent distortion in chessboard pattern images captured from different vantage points to reverse engineer the camera optics that was used to capture the images.  This is done with the OpenCV `findChessboardCorners` function to detect chessboard coeners, and `calibrateCamera` for camera calibration.
 
 In the notebook, I scan all the calibration images for chessboard corners.  I draw and display the chessboard corners for every calibration image where a chessboard was detected using OpenCV `drawChessboardCorners`.  Note that chessboard corners are not detected for every image - if the chessboard is larger than full image, then corners are not detected.  Below is an example of a chessboard where the corners are not detected.
 
@@ -96,11 +96,11 @@ The main lane detection logic of my code is defined in cells `[16]` through `[19
 
 Cell `[16]` contains global state variables used during pipeline processing, as well as global hyperparameters used to tune the lane detection pipeline.
 
-Cell `[18]` defines the Line object used to keep state during pipeline processing.
+Cell `[18]` defines the Lane object used to keep state during video pipeline processing.
 
 Cell `[19]` contains the full lane detection logic.  This includes functions to initalize the global state, and a large Python function with several local utility functions.
 
-Lane line detection uses the approach from the lectures, with both full sliding window search when no lanes have been detected, as well as local-region search when lanes have been detected. If local-region search (or sliding window search) fails to detect a good set of lanes, then full sliding window search is done in the next iteration.
+Lane line detection uses the approach from the lectures, with both full image sliding window search when no lanes have been detected, as well as local-region search when lanes have been detected. If local-region search fails to detect a good set of lanes, then full sliding window search is done in the next iteration.
 
 The full sliding window search works on histograms of pixel density along the X-axis to see what points along the horizontal dimension have the highest number of thresholded pixels.  I took the histogram on the lower 50% of the thresholded binary image as done in the lectures.
 
@@ -174,8 +174,6 @@ One challenge I had was in tuning the binary thresholds.  With the challenge vid
 In both the challenge and harder challenge video, the weighted average smoothing sometimes 'remembers' the recent past too much, resulting in 'imaginary' lane lines.
 
 With sliding window search, the search is heavily dependent on the density of pixels in the lower half of the image.  If the highest density based on thresholding is incorrect, the search starts with bad initial conditions and it is difficult to recover from that.
-
-Sliding window initialization depends on the highest single-pixel width point of the histogram.  It would be more robust to select based on density - i.e., choose using the total area for a few pixels in width rather than a single pixel.
 
 For both sliding window and local region search, the left/right margin determines how far pixels are searched for the lane lines.  If the lane curves very rapidly as it does in the harder challenge video, this can incorrectly limit how far the algorithm will look for the lane lines.
 
